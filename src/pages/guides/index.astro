@@ -1,0 +1,56 @@
+---
+import Base from "../../layouts/Base.astro";
+import data from "../../data/articles.json";
+
+const { articles, categoryNames, categoryOrder } = data;
+
+const grouped = {};
+for (const a of articles) {
+  (grouped[a.category] ||= []).push(a);
+}
+const categories = categoryOrder.filter((c) => grouped[c] && grouped[c].length);
+
+const canonical = "https://typemetrics.net/guides";
+const title = "Typing Guides — TypeMetrics";
+const description =
+  "In-depth guides on typing speed, technique, benchmarks, keyboards, and practice drills to help you type faster and more accurately.";
+
+const itemListJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Typing Guides",
+  url: canonical,
+  description,
+};
+---
+<Base title={title} description={description} canonical={canonical} jsonLd={[itemListJsonLd]}>
+  <nav class="crumbs">
+    <a href="/">Home</a><span>›</span><span>Guides</span>
+  </nav>
+
+  <h1>Typing Guides</h1>
+  <p class="lead">
+    Practical, in-depth guides to help you type faster and more accurately — from
+    touch typing fundamentals to keyboard choice and targeted practice drills.
+  </p>
+
+  {categories.map((cat) => (
+    <section class="cat">
+      <h2>{categoryNames[cat]}</h2>
+      <div class="cards">
+        {grouped[cat].map((a) => (
+          <a class="card" href={`/guides/${a.slug}`}>
+            <h3>{a.title}</h3>
+            <p>{a.excerpt}</p>
+            {a.readingTime && <div class="rt">{a.readingTime} min read</div>}
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <div class="test-cta">
+    <p>Ready to check your speed? Take the free typing test.</p>
+    <a class="cta" href="/">Start the Typing Test</a>
+  </div>
+</Base>
